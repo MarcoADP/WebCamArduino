@@ -1,0 +1,17 @@
+extends layout.pug
+
+block title
+  title Monitoramento Arduino
+
+block link
+  -var selected = 'Home';
+
+block content
+  div.container
+    div.jumbotron
+      h1 Monitoramento!
+      p Welcome to my app, ready to get started? #{message}
+      .row
+        .col-md-6
+          form(action='/ligaDesliga', method='POST')
+            button.btn.btn-primary.btn-lg.btn-block(type="submit") Ligar/Desligar

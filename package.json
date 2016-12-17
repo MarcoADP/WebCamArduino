@@ -1,0 +1,11 @@
+{
+  "name": "Monitoramento",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "latest",
+    "pug": "^2.0.0-beta6"
+  }
+}
