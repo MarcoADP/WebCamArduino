@@ -1,4 +1,4 @@
-#define F_CPU 16000000
+//#define F_CPU 16000000
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -30,12 +30,11 @@ void uart_init(void) {
   UCSR0B = _BV(RXEN0) | _BV(TXEN0);   /* Enable RX and TX */
 }
 
-int uart_putchar(char data) {
+void uart_putchar(char data) {
   // Wait for empty transmit buffer
   loop_until_bit_is_set(UCSR0A, UDRE0);
   // Put data into buffer, sends the data
   UDR0 = data;
-  return 0;
 }
 
 char uart_getchar(void) {
@@ -50,7 +49,7 @@ void serial_send(char *msg) {
 }
 
 char* serial_readline() {
-  char *line = malloc(96);
+  char *line = (char*) malloc(96);
   uint8_t i = 0;
 
   line[i] = uart_getchar();
@@ -62,38 +61,15 @@ char* serial_readline() {
   return line;
 }
 
-/*void uart_putchar(char c, FILE *stream) {
-  if (c == '\n') {
-    uart_putchar('\r', stream);
-  }
-  loop_until_bit_is_set(UCSR0A, UDRE0);
-  UDR0 = c;
-}
-
-char uart_getchar(FILE *stream) {
-  loop_until_bit_is_set(UCSR0A, RXC0);
-  return UDR0;
-}*/
-
 
 int main() {  
-  /*FILE uart_output = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
-  FILE uart_input = FDEV_SETUP_STREAM(NULL, uart_getchar, _FDEV_SETUP_READ);
-
   uart_init();
-  stdout = &uart_output;
-  stdin  = &uart_input;
 
-  char input;
+  while (1) {
 
-  while(1) {
-    puts("Hello world!");
-    input = getchar();
-    printf("You wrote %c\n", input);
-  }*/
+  }
 
   return 0;
-  
 }
 
 
