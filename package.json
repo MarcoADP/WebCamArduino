@@ -7,6 +7,7 @@
   "dependencies": {
     "express": "latest",
     "pug": "^2.0.0-beta6",
-    "serialport": "latest"
+    "serialport": "latest",
+    "node-webcam":"latest"
   }
 }
