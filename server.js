@@ -47,6 +47,7 @@ app.listen(PORTA_SERVER, function() {
 //----------------------------------------------
 
 var NodeWebcam = require( "node-webcam" );
+var d = new Date();
 
 
 //Default options 
@@ -67,13 +68,7 @@ var opts = {
 
 }
 
-var Webcam = NodeWebcam.create( opts ); 
-
-router.post('/ligaDesliga', function(req, res, next) {
-  NodeWebcam.capture( "my_picture", {}, function() {
-    console.log( "Image created!" );
-  });
-});
+var Webcam = NodeWebcam.create(opts); 
 
 
 //----------------------------------------------
@@ -95,6 +90,11 @@ mySerialPort.on("open", function() {
 
 mySerialPort.on("data", function(data) {
   console.log('Recebeu: ' + data);
+  if (data == "TP") {
+    Webcam.capture( "my_picture-" + d.getDate() + "_" + d.getMonth() + "_" + d.getYear() + "_" + d.getHours() + "_" +  d.getMinutes() + "_" + d.getSeconds());
+    console.log( "Imagem criada!" );
+    d = new Date();
+  } 
   /*io.emit('serialData', {
     dado: parseFloat(data)
   });*/

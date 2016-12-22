@@ -9,8 +9,12 @@
 //#define MYUBRR F_CPU/16/BAUD-1
 #include <util/setbaud.h>
 
-#define clear_bit(reg, idx)(reg &= ~(_BV(idx)))
+#define pinoSensor   PD7
+#define led          PB0
+
+#define clr_bit(reg, idx)(reg &= ~(_BV(idx)))
 #define set_bit(reg, idx)(reg |= _BV(idx))
+#define tst_bit(reg, bit) (reg&(1<<bit)) 
 
 //----------------------------------------------
 //             COMUNICAÇÃO SERIAL
@@ -62,14 +66,23 @@ char* serial_readline() {
 }
 
 
-int main() {  
+int main() {   
   uart_init();
+  DDRB  |= 0b00000001;
+  PORTD |= 0b10000000;
 
-  while (1) {
-
+  while(1)
+  {
+    if(!tst_bit(PIND, pinoSensor)){
+      set_bit(PORTB, led);
+      serial_send("TP\n");
+      _delay_ms(3000);
+    } else {
+      clr_bit(PORTB, led);
+      serial_send("OBJETO NAO DETECTADO...\n");
+    }
   }
-
-  return 0;
+  return 0;  
 }
 
 
