@@ -9,12 +9,16 @@
 //#define MYUBRR F_CPU/16/BAUD-1
 #include <util/setbaud.h>
 
-#define pinoSensor   PD7
-#define led          PB0
+#define led          PD7
 
-#define clr_bit(reg, idx)(reg &= ~(_BV(idx)))
-#define set_bit(reg, idx)(reg |= _BV(idx))
-#define tst_bit(reg, bit) (reg&(1<<bit)) 
+#define set_bit(y,bit) (y|=(1<<bit)) //coloca em 1 o bit x da variável Y
+#define clr_bit(y,bit) (y&=~(1<<bit)) //coloca em 0 o bit x da variável Y
+#define cpl_bit(y,bit) (y^=(1<<bit)) //troca o estado lógico do bit x da variável Y
+#define tst_bit(y,bit) (y&(1<<bit)) //retorna 0 ou 1 conforme leitura do bit 
+
+#define DISPARO PB1
+
+unsigned int Inicio_Sinal, Distancia;
 
 //----------------------------------------------
 //             COMUNICAÇÃO SERIAL
@@ -65,24 +69,44 @@ char* serial_readline() {
   return line;
 }
 
+//----------------------------------------------
+//             CONFIGURAÇÃO SENSOR
+//----------------------------------------------
+
+ISR(TIMER1_CAPT_vect)
+{
+  cpl_bit(TCCR1B, ICES1);
+  if(!tst_bit(TCCR1B,ICES1))
+    Inicio_Sinal = ICR1;
+  else
+    Distancia = (ICR1 - Inicio_Sinal)/58;
+}
 
 int main() {   
   uart_init();
-  DDRB  |= 0b00000001;
-  PORTD |= 0b10000000;
+  DDRB = 0b00000010;
+  PORTB = 0b11111101;
+  DDRD |= 0b10000000;
+
+  TCCR1B = (1<<ICES1) | (1<<CS11);
+  TIMSK1 = 1<<ICIE1;
+  sei();
 
   while(1)
   {
-    if(!tst_bit(PIND, pinoSensor)){
-      set_bit(PORTB, led);
+    set_bit(PORTB,DISPARO);
+    _delay_us(10);
+    clr_bit(PORTB,DISPARO);
+    
+    if(Distancia < 100){
+      set_bit(PORTD, led);
       serial_send("TP\n");
       _delay_ms(3000);
     } else {
-      clr_bit(PORTB, led);
+      clr_bit(PORTD, led);
       serial_send("OBJETO NAO DETECTADO...\n");
     }
+    _delay_ms(50);
   }
   return 0;  
 }
-
-
