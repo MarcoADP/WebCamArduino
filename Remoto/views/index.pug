@@ -1,0 +1,43 @@
+extends layout.pug
+
+block title
+  title Webcam Observer
+
+block link
+  -var selected = 'Home';
+
+block content
+  div.container
+    .row
+      .col-md-3
+        div.panel.panel-default
+          div.panel-heading
+            h3.panel-title Informações
+          div.panel-body
+            div 
+              if sensorOn
+                div Sensor de presença: 
+                  span.label.label-primary ON
+              else
+                div Sensor de presença: 
+                  span.label.label-danger OFF
+
+      .col-md-9
+        div.jumbotron
+          h1 Webcam Observer
+          p Bem vindo ao sistema de monitoramento #{user.realname}!
+          <hr>
+          .row
+            .col-md-1
+            .col-md-10
+              form(action='/sensor', method='POST')
+                button.btn.btn-primary.btn-lg.btn-block(type="submit") 
+                  if sensorOn
+                    div Desativar sensor de presença
+                  else
+                    div Ativar sensor de presença
+              br
+              form(action='/takePicture', method='POST')
+                button.btn.btn-primary.btn-lg.btn-block(type="submit") Capturar foto
+            .col-md-1
+              

@@ -1,0 +1,18 @@
+/*body {
+  background-color: #303642;
+}*/
+        
+.login-panel form {
+  padding: 0;
+  margin: 0;
+}
+        
+.login-panel .panel-body {            
+  padding-bottom: 0px;
+}
+
+.login-panel {
+  margin-top: 25%;
+  -webkit-box-shadow: 0 0px 20px 5px rgba(0, 0, 0, .2);
+  box-shadow: 0 0px 20px 5px rgba(0, 0, 0, .2);
+}
