@@ -79,7 +79,7 @@ ISR(TIMER1_CAPT_vect)
   if(!tst_bit(TCCR1B,ICES1))
     Inicio_Sinal = ICR1;
   else
-    Distancia = (ICR1 - Inicio_Sinal)/58;
+    Distancia = (ICR1 - Inicio_Sinal)/116;
 }
 
 int main() {   
@@ -87,6 +87,7 @@ int main() {
   DDRB = 0b00000010;
   PORTB = 0b11111101;
   DDRD |= 0b10000000;
+  Distancia = 1000;
 
   TCCR1B = (1<<ICES1) | (1<<CS11);
   TIMSK1 = 1<<ICIE1;
@@ -98,7 +99,7 @@ int main() {
     _delay_us(10);
     clr_bit(PORTB,DISPARO);
     
-    if(Distancia < 100){
+    if(Distancia < 400){
       set_bit(PORTD, led);
       serial_send("TP\n");
       _delay_ms(3000);
