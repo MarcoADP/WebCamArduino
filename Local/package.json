@@ -6,7 +6,8 @@
   },
   "dependencies": {
     "express": "latest",
-    "pug": "^2.0.0-beta6",
+    "http": "latest",
+    "cron": "latest",
     "serialport": "latest",
     "node-webcam":"latest"
   }
