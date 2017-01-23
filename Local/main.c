@@ -18,6 +18,10 @@
 
 #define DISPARO PB1
 
+#define SERIAL_COM_SENSOR_ON "S_ON"
+#define SERIAL_COM_SENSOR_OFF "S_OFF"
+#define SERIAL_COM_SENSOR_DISPARADO "S_DISP"
+
 unsigned int Inicio_Sinal, Distancia;
 
 //----------------------------------------------
@@ -50,10 +54,11 @@ char uart_getchar(void) {
   return UDR0;
 }
 
-void serial_send(char *msg) {
+void serial_send(char *msg, char endline) {
   for (char *elem = msg; *elem != '\0'; elem++) {
     uart_putchar(*elem);
   }
+  uart_putchar(endline);
 }
 
 char* serial_readline() {
@@ -84,12 +89,14 @@ ISR(TIMER1_CAPT_vect)
 
 int main() {   
   uart_init();
+
   DDRB = 0b00000010;
   PORTB = 0b11111101;
   DDRD |= 0b10000000;
 
   TCCR1B = (1<<ICES1) | (1<<CS11);
   TIMSK1 = 1<<ICIE1;
+
   sei();
 
   while(1)
@@ -100,11 +107,10 @@ int main() {
     
     if(Distancia < 100){
       set_bit(PORTD, led);
-      serial_send("TP\n");
+      serial_send(SERIAL_COM_SENSOR_DISPARADO, '\n');
       _delay_ms(3000);
     } else {
       clr_bit(PORTD, led);
-      serial_send("OBJETO NAO DETECTADO...\n");
     }
     _delay_ms(50);
   }

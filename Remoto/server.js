@@ -1,8 +1,8 @@
 //----------------------------------------------
-//                  SERVIDOR
+//             SERVIDOR REMOTO
 //----------------------------------------------
 
-const PORTA_SERVER = 3000;
+const PORTA_SERVER = 8080;
 
 var express = require("express");
 var session = require('express-session');
@@ -20,6 +20,8 @@ app.use(session({
   saveUninitialized: false, // don't create session until something stored
   secret: 'shhhh, very secret'
 }));
+
+app.use(bodyParser.json())
 
 app.use(function(req, res, next){
   var err = req.session.error;
@@ -63,13 +65,20 @@ router.post('/sensor', function(req, res, next) {
 });
 
 router.post('/takePicture', function(req, res, next) {
-  takePicture = !takePicture;
+  takePicture = true;
+  res.redirect('/')
+});
+
+router.post('/api2', function(req, res, next) {
+  console.log(req.body);
   res.redirect('/')
 });
 
 router.get('/api', function(req, res, next) {
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify({ "sensorOn": sensorOn,  "takePicture": takePicture}));
+
+  takePicture = false;
 });
 
 

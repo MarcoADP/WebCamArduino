@@ -9,6 +9,9 @@
     "http": "latest",
     "cron": "latest",
     "serialport": "latest",
-    "node-webcam":"latest"
+    "node-webcam":"latest",
+    "fs": "latest",
+    "imgur-uploader": "latest",
+    "readline": "latest"
   }
 }
