@@ -163,9 +163,13 @@ function takePictureAndSend() {
 
   imgurUploader(fs.readFileSync(filename+".jpg"), {title: filename}).then(data => {
     console.log(data);
-    sendImageToRemote(data.link, str_date);
-    //mandar data inteiro em json
-    // ou data.date
+
+    img_data = {
+      img_link: data.link,
+      img_date: str_date
+    }
+
+    postJSON({"img_data": img_data});
     /*
     {
       id: 'OB74hEa',
@@ -179,9 +183,6 @@ function takePictureAndSend() {
   });
 }
 
-function sendImageToRemote(link, date) {
-  // send link
-}
 
 
 //----------------------------------------------
@@ -191,6 +192,7 @@ function sendImageToRemote(link, date) {
 const SERIAL_COM_SENSOR_ON = "S_ON";
 const SERIAL_COM_SENSOR_OFF = "S_OFF";
 const SERIAL_COM_SENSOR_DISPARADO = "S_DISP";
+const SERIAL_COM_ARDUINO_CONECTADO = "ARDUINO_ON";
 
 var SerialPort = require("serialport");
 
@@ -208,7 +210,11 @@ function Serial(port) {
     if (data === SERIAL_COM_SENSOR_DISPARADO) {
       console.log("Sensor disparado!");
       takePictureAndSend();
+    } else if (data === SERIAL_COM_ARDUINO_CONECTADO) {
+      console.log("Arduino conectado!");
+      postJSON({"arduinoOn": true});
     }
+
   });
   
   mySerialPort.on('error', function(error) {

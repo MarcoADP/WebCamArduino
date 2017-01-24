@@ -21,6 +21,7 @@
 #define SERIAL_COM_SENSOR_ON "S_ON"
 #define SERIAL_COM_SENSOR_OFF "S_OFF"
 #define SERIAL_COM_SENSOR_DISPARADO "S_DISP"
+#define SERIAL_COM_ARDUINO_CONECTADO "ARDUINO_ON"
 
 unsigned int Inicio_Sinal, Distancia;
 
@@ -98,6 +99,8 @@ int main() {
   TIMSK1 = 1<<ICIE1;
 
   sei();
+
+  serial_send(SERIAL_COM_ARDUINO_CONECTADO, '\n');
 
   while(1)
   {

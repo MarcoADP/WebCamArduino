@@ -4,16 +4,49 @@ html
     block title
       title Webcam Observer
 
-    link(href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', rel='stylesheet')
+    link(href='/public/bootstrap.min.css', rel='stylesheet')
     link(href="/public/bootstrap-theme.css" rel="stylesheet")
-    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js")
+    script(src="/public/js/bootstrap.min.js")
 
     link(href='/public/app.css', rel='stylesheet')
 
     block link
       -var selected = 'Home'; //default
 
-    -var menu = { 'Home': '/', 'Sobre': '/about'};
+    -var menu = { 'Home': '/', 'Sobre': '/about', 'Imagens': '/images'};
+
+    block style
+
+    script.
+      document.addEventListener('DOMContentLoaded', function () {
+        if (!Notification) {
+          alert('Desktop notifications not available in your browser. Try Chromium.'); 
+          return;
+        }
+
+        if (Notification.permission !== "granted")
+          Notification.requestPermission();
+      });
+
+      function notifyMe() {
+        if (Notification.permission !== "granted")
+          Notification.requestPermission();
+        else {
+          var notification = new Notification('Alerta: Sistema de Monitoramento', {
+            icon: '/public/alert-icon.png',
+            body: 'Sua casa pode estar sendo invadida! Clique para ver as imagens.'
+          });
+
+          notification.onclick = function () {
+            window.open("/images");      
+          };
+        }
+      }
+      
+      if (#{pushNotification}) {
+        notifyMe();
+      }
+
   body
     nav.navbar.navbar-inverse
       .container
