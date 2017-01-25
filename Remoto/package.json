@@ -9,5 +9,8 @@
     "pug": "^2.0.0-beta6",
     "express-session": "latest",
     "body-parser": "latest"
+  },
+  "engines": {
+    "node": "6.9.4"
   }
 }

@@ -2,7 +2,7 @@
 //             SERVIDOR REMOTO
 //----------------------------------------------
 
-const PORTA_SERVER = 8080;
+const PORTA_SERVER = process.env.PORT || 8080;
 
 var express = require("express");
 var session = require('express-session');
@@ -36,7 +36,7 @@ app.use(function(req, res, next){
 
 
 var arduinoOn = false;
-var sensorOn = true;
+var sensorOn = false;
 var takePicture = false;
 
 var pushNotification = false;
@@ -60,20 +60,22 @@ router.get('/', function(req, res){
 });
 
 router.get("/index", restrict, function(req, res){
-  res.render('index', {sensorOn: sensorOn, user: adminUser, pushNotification: pushNotification})
+  res.render('index', {sensorOn: sensorOn, arduinoOn: arduinoOn, user: adminUser, pushNotification: pushNotification})
 });
 
 router.get("/about", restrict, function(req, res){
-  res.render('about', {sensorOn: sensorOn, user: adminUser, pushNotification: pushNotification})
+  res.render('about', {sensorOn: sensorOn, arduinoOn: arduinoOn, user: adminUser, pushNotification: pushNotification})
 });
 
 router.get("/images", restrict, function(req, res){
-  res.render('images', {sensorOn: sensorOn, user: adminUser, pushNotification: pushNotification, images_info: images_info})
+  res.render('images', {sensorOn: sensorOn, arduinoOn: arduinoOn, user: adminUser, pushNotification: pushNotification, images_info: images_info})
 });
 
 router.post('/sensor', function(req, res, next) {
-  sensorOn = !sensorOn;
-  res.redirect('/')
+  if (!arduinoOn) {
+    sensorOn = !sensorOn;
+    res.redirect('/');
+  }
 });
 
 router.post('/takePicture', function(req, res, next) {
@@ -113,8 +115,9 @@ function processJSON(json_data) {
   }
 
   if ("arduinoOn" in json_data) {
-    console.log("ARDUINO ONNNNNNNNNNNNNNNN");
+    console.log("ARDUINO ON");
     arduinoOn = json_data.arduinoOn;
+    sensorOn = arduinoOn;
   }
 }
 

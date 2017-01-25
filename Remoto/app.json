@@ -1,0 +1,7 @@
+{
+  "name": "Webcam Observer",
+  "description": "Sistema de monitoriamento usando arduino.",
+  "repository": "https://github.com/MarcoADP/WebCamArduino",
+  "keywords": ["node", "express", "arduino"],
+  "image": "heroku/nodejs"
+}
