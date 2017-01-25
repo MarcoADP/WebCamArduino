@@ -72,10 +72,10 @@ router.get("/images", restrict, function(req, res){
 });
 
 router.post('/sensor', function(req, res, next) {
-  if (!arduinoOn) {
+  if (arduinoOn) {
     sensorOn = !sensorOn;
-    res.redirect('/');
   }
+  res.redirect('/')
 });
 
 router.post('/takePicture', function(req, res, next) {
