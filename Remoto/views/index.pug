@@ -15,12 +15,21 @@ block content
             h3.panel-title Informações
           div.panel-body
             div 
+              if arduinoOn
+                div Arduino: 
+                  span.label.label-primary Conectado
+              else
+                div Arduino: 
+                  span.label.label-danger Desconectado
+            <br>
+            div 
               if sensorOn
                 div Sensor de presença: 
                   span.label.label-primary ON
               else
                 div Sensor de presença: 
                   span.label.label-danger OFF
+            
 
       .col-md-9
         div.jumbotron

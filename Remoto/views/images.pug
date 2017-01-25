@@ -1,0 +1,30 @@
+extends layout.pug
+
+block title
+  title Webcam Observer
+
+block link
+  -var selected = 'Imagens';
+
+block style
+  //- style.
+  //-   body {
+  //-     position: relative;
+  //-   }
+    
+
+block content
+  div.container
+    .row
+      .col-md-12
+        div.jumbotron
+          h1 Fotos Capturadas
+          <hr>
+          if images_info && images_info.links.length
+            each val, i in images_info.links
+              h2= images_info.dates[i]? images_info.dates[i] + ":" : ""
+              img(src=val)
+          else
+            h2 Nenhuma imagem capturada.
+
+

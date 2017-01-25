@@ -1,8 +1,8 @@
 //----------------------------------------------
-//                  SERVIDOR
+//             SERVIDOR REMOTO
 //----------------------------------------------
 
-const PORTA_SERVER = 3000;
+const PORTA_SERVER = 8080;
 
 var express = require("express");
 var session = require('express-session');
@@ -21,6 +21,8 @@ app.use(session({
   secret: 'shhhh, very secret'
 }));
 
+app.use(bodyParser.json())
+
 app.use(function(req, res, next){
   var err = req.session.error;
   var msg = req.session.success;
@@ -33,8 +35,16 @@ app.use(function(req, res, next){
 });
 
 
+var arduinoOn = false;
 var sensorOn = true;
 var takePicture = false;
+
+var pushNotification = false;
+
+var images_info = {
+  "links": [],
+  "dates": []
+}
 
 router.use(function (req, res, next) {
   console.log("/" + req.method);
@@ -50,11 +60,15 @@ router.get('/', function(req, res){
 });
 
 router.get("/index", restrict, function(req, res){
-  res.render('index', {sensorOn: sensorOn, user: adminUser})
+  res.render('index', {sensorOn: sensorOn, user: adminUser, pushNotification: pushNotification})
 });
 
 router.get("/about", restrict, function(req, res){
-  res.render('about', {user: adminUser})
+  res.render('about', {sensorOn: sensorOn, user: adminUser, pushNotification: pushNotification})
+});
+
+router.get("/images", restrict, function(req, res){
+  res.render('images', {sensorOn: sensorOn, user: adminUser, pushNotification: pushNotification, images_info: images_info})
 });
 
 router.post('/sensor', function(req, res, next) {
@@ -63,13 +77,20 @@ router.post('/sensor', function(req, res, next) {
 });
 
 router.post('/takePicture', function(req, res, next) {
-  takePicture = !takePicture;
+  takePicture = true;
+  res.redirect('/')
+});
+
+router.post('/api2', function(req, res, next) {
+  processJSON(req.body);
   res.redirect('/')
 });
 
 router.get('/api', function(req, res, next) {
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify({ "sensorOn": sensorOn,  "takePicture": takePicture}));
+
+  takePicture = false;
 });
 
 
@@ -82,6 +103,19 @@ app.use("*", function(req, res) {
 app.listen(PORTA_SERVER, function() {
   console.log("Listening on http://localhost:" + PORTA_SERVER);
 });
+
+
+function processJSON(json_data) {
+  if ("img_data" in json_data) {
+    images_info.links.push(json_data.img_data.img_link);
+    images_info.dates.push(json_data.img_data.img_date);
+  }
+
+  if ("arduinoOn" in json_data) {
+    arduinoOn = json_data.arduinoOn;
+  }
+}
+
 
 //----------------------------------------------
 //                   LOGIN
