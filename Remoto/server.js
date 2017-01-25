@@ -82,6 +82,7 @@ router.post('/takePicture', function(req, res, next) {
 });
 
 router.post('/api2', function(req, res, next) {
+  console.log(JSON.stringify(req.body));
   processJSON(req.body);
   res.redirect('/')
 });
@@ -112,6 +113,7 @@ function processJSON(json_data) {
   }
 
   if ("arduinoOn" in json_data) {
+    console.log("ARDUINO ONNNNNNNNNNNNNNNN");
     arduinoOn = json_data.arduinoOn;
   }
 }

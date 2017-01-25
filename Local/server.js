@@ -145,7 +145,7 @@ var opts = {
   height: 720,
   delay: 0,
   quality: 100,
-  output: "jpg",
+  output: "jpeg",
   verbose: true
 }
 
@@ -159,28 +159,39 @@ function takePictureAndSend() {
   var filename = "my_picture-" + str_date;
   Webcam.capture(filename);
 
+
   console.log("Imagem "+filename+".jpg criada.");
+  //func f = uploadAndSend(filename, str_date);
 
-  imgurUploader(fs.readFileSync(filename+".jpg"), {title: filename}).then(data => {
-    console.log(data);
+  setTimeout(function() {uploadAndSend(filename, str_date)}, 4500);
+  
 
-    img_data = {
-      img_link: data.link,
-      img_date: str_date
-    }
+}
 
-    postJSON({"img_data": img_data});
-    /*
-    {
-      id: 'OB74hEa',
-      link: 'http://i.imgur.com/jbhDywa.jpg',
-      title: 'Hello!',
-      date: Sun May 24 2015 00:02:41 GMT+0200 (CEST),
-      type: 'image/jpg',
-      ...
-    }
-    */
-  });
+function uploadAndSend(filename, str_date) {
+
+	imgurUploader(fs.readFileSync(filename+".jpg"), {title: filename}).then(data => {
+	  //console.log(data);
+
+	  var img_data = {
+	    img_link: data.link,
+	    img_date: str_date
+	  }
+
+	  //console.log(JSON.stringify({"img_data": img_data}));
+
+	  postJSON({"img_data": img_data});
+	  /*
+	  {
+	    id: 'OB74hEa',
+	    link: 'http://i.imgur.com/jbhDywa.jpg',
+	    title: 'Hello!',
+	    date: Sun May 24 2015 00:02:41 GMT+0200 (CEST),
+	    type: 'image/jpg',
+	    ...
+	  }
+	  */
+	});
 }
 
 
