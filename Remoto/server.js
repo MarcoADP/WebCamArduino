@@ -2,7 +2,7 @@
 //             SERVIDOR REMOTO
 //----------------------------------------------
 
-const PORTA_SERVER = process.env.PORT || 8080;
+const PORTA_SERVER = process.env.PORT || 5000;
 
 var express = require("express");
 var session = require('express-session');

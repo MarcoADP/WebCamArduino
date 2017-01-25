@@ -109,7 +109,7 @@ int main() {
     _delay_us(10);
     clr_bit(PORTB,DISPARO);
     
-    if(Distancia < 400){
+    if(Distancia < 200) {
       set_bit(PORTD, led);
       serial_send(SERIAL_COM_SENSOR_DISPARADO, '\n');
       _delay_ms(3000);

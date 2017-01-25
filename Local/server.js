@@ -30,8 +30,10 @@ app.listen(PORTA_SERVER, function() {
 //----------------------------------------------
 
 
+// const REMOTE_SERVER_URL = "webcam-observer.herokuapp.com";
+// const REMOTE_SERVER_PORT = 80;
 const REMOTE_SERVER_URL = "localhost";
-const REMOTE_SERVER_PORT = 8080;
+const REMOTE_SERVER_PORT = 5000;
 const REMOTE_SERVER_GET_API_PATH = "/api";
 const REMOTE_SERVER_POST_API_PATH = "/api2";
 
@@ -127,6 +129,7 @@ function processApiResponse(statusCode, jsonObj) {
 function startCronJob() {
   new cronJob("* * * * * *", function() {
     getJSON(processApiResponse);
+    //postJSON
   }, null, true);
 }
 
@@ -157,28 +160,23 @@ function takePictureAndSend() {
   var str_date = date.getDate() + "_" + date.getMonth() + "_" + date.getYear() + "_" + date.getHours() + "_" +  date.getMinutes() + "_" + date.getSeconds();
 
   var filename = "my_picture-" + str_date;
-  Webcam.capture(filename);
+  Webcam.capture(filename, function(err) {
+    if (!err) {
+      console.log("Imagem "+filename+".jpg criada.");
+      uploadAndSend(filename, str_date)
+    }
+  });
 
-
-  console.log("Imagem "+filename+".jpg criada.");
-  //func f = uploadAndSend(filename, str_date);
-
-  setTimeout(function() {uploadAndSend(filename, str_date)}, 4500);
-  
-
+  //setTimeout(function() {uploadAndSend(filename, str_date)}, 4500);
 }
 
 function uploadAndSend(filename, str_date) {
 
 	imgurUploader(fs.readFileSync(filename+".jpg"), {title: filename}).then(data => {
-	  //console.log(data);
-
 	  var img_data = {
 	    img_link: data.link,
 	    img_date: str_date
 	  }
-
-	  //console.log(JSON.stringify({"img_data": img_data}));
 
 	  postJSON({"img_data": img_data});
 	  /*
