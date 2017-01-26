@@ -34,7 +34,6 @@ app.use(function(req, res, next){
   next();
 });
 
-
 var arduinoOn = false;
 var sensorOn = false;
 var takePicture = false;
@@ -115,9 +114,9 @@ function processJSON(json_data) {
   }
 
   if ("arduinoOn" in json_data) {
-    console.log("ARDUINO ON");
     arduinoOn = json_data.arduinoOn;
     sensorOn = arduinoOn;
+    console.log("ARDUINO ON: "+arduinoOn);
   }
 }
 
@@ -137,7 +136,6 @@ function autenticar(username, password, user) {
 }
 
 var adminUser = new User('admin', 'admin', 'Admin');
-
 
 
 function restrict(req, res, next) {
@@ -174,3 +172,5 @@ router.post('/login', function(req, res){
     res.redirect('/login');
   }
 });
+
+

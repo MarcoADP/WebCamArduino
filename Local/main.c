@@ -103,16 +103,24 @@ int main() {
 
   serial_send(SERIAL_COM_ARDUINO_CONECTADO, '\n');
 
+  uint8_t ligado = 1;
+  
   while(1)
   {
     set_bit(PORTB,DISPARO);
     _delay_us(10);
     clr_bit(PORTB,DISPARO);
-    
-    if(Distancia < 200) {
+    char *line = serial_readline();
+    if (strcmp(line, SERIAL_COM_SENSOR_ON) == 0) {
+      ligado = 1;
+    } else if (strcmp(line, SERIAL_COM_SENSOR_OFF) == 0) {
+      ligado = 0;
+    }
+    free(line);
+    if(Distancia < 200 && ligado) {
       set_bit(PORTD, led);
       serial_send(SERIAL_COM_SENSOR_DISPARADO, '\n');
-      _delay_ms(3000);
+      _delay_ms(1500);
     } else {
       clr_bit(PORTD, led);
     }

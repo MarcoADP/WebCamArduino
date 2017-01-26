@@ -30,10 +30,10 @@ app.listen(PORTA_SERVER, function() {
 //----------------------------------------------
 
 
-// const REMOTE_SERVER_URL = "webcam-observer.herokuapp.com";
-// const REMOTE_SERVER_PORT = 80;
-const REMOTE_SERVER_URL = "localhost";
-const REMOTE_SERVER_PORT = 5000;
+const REMOTE_SERVER_URL = "webcam-observer.herokuapp.com";
+const REMOTE_SERVER_PORT = 80;
+//const REMOTE_SERVER_URL = "localhost";
+//const REMOTE_SERVER_PORT = 5000;
 const REMOTE_SERVER_GET_API_PATH = "/api";
 const REMOTE_SERVER_POST_API_PATH = "/api2";
 
@@ -44,7 +44,7 @@ var cronJob = require("cron").CronJob;
 var sensorOn = true;
 
 
-function postJSON(post_data) {
+function postJSON(post_data, callback) {
   var str_data = JSON.stringify(post_data);
 
   var options = {
@@ -63,6 +63,7 @@ function postJSON(post_data) {
     res.setEncoding('utf8');
     res.on('data', function (chunk) {
       console.log('Response: ', chunk);
+      if (callback) callback();
     });
   });
 
@@ -117,19 +118,26 @@ function processApiResponse(statusCode, jsonObj) {
   if (jsonObj.sensorOn != sensorOn) {
     sensorOn = jsonObj.sensorOn;
     if (sensorOn) {
+      console.log("SENSOR ON");
       serial.send(SERIAL_COM_SENSOR_ON);
     } else {
+      console.log("SENSOR OFF");
       serial.send(SERIAL_COM_SENSOR_OFF);
     }
   }
 }
+
+setInterval(function() {
+  if (serial) {
+    serial.send("t");
+  }
+}, 300);
 
 
 // Executa getJSON de 1 em 1 segundo
 function startCronJob() {
   new cronJob("* * * * * *", function() {
     getJSON(processApiResponse);
-    //postJSON
   }, null, true);
 }
 
@@ -149,7 +157,7 @@ var opts = {
   delay: 0,
   quality: 100,
   output: "jpeg",
-  verbose: true
+  verbose: false
 }
 
 var Webcam = NodeWebcam.create(opts); 
@@ -164,32 +172,21 @@ function takePictureAndSend() {
     if (!err) {
       console.log("Imagem "+filename+".jpg criada.");
       uploadAndSend(filename, str_date)
+    } else {
+      //console.log(err);
     }
   });
-
-  //setTimeout(function() {uploadAndSend(filename, str_date)}, 4500);
 }
 
 function uploadAndSend(filename, str_date) {
+  imgurUploader(fs.readFileSync(filename+".jpg"), {title: filename}).then(data => {
+    var img_data = {
+      img_link: data.link,
+      img_date: str_date
+    }
 
-	imgurUploader(fs.readFileSync(filename+".jpg"), {title: filename}).then(data => {
-	  var img_data = {
-	    img_link: data.link,
-	    img_date: str_date
-	  }
-
-	  postJSON({"img_data": img_data});
-	  /*
-	  {
-	    id: 'OB74hEa',
-	    link: 'http://i.imgur.com/jbhDywa.jpg',
-	    title: 'Hello!',
-	    date: Sun May 24 2015 00:02:41 GMT+0200 (CEST),
-	    type: 'image/jpg',
-	    ...
-	  }
-	  */
-	});
+    postJSON({"img_data": img_data});
+  });
 }
 
 
@@ -223,15 +220,20 @@ function Serial(port) {
       console.log("Arduino conectado!");
       postJSON({"arduinoOn": true});
     }
-
   });
   
   mySerialPort.on('error', function(error) {
     console.log(error);
   });
+
+  mySerialPort.on('close', function(error) {
+    postJSON({"arduinoOn": false});
+  });
+
   
   this.send = function(data) {
     mySerialPort.write(data);
+    mySerialPort.write('\n');
   }
 }
 
@@ -262,3 +264,21 @@ function main() {
   }); 
 }
 
+
+process.stdin.resume();
+
+function exitHandler(options, err) {
+  postJSON({"arduinoOn": false}, function() {
+    if (options.cleanup) {
+      
+    }
+    if (err) console.log(err.stack);
+    if (options.exit) process.exit();
+  });
+}
+
+process.on('exit', exitHandler.bind(null,{cleanup:true}));
+
+process.on('SIGINT', exitHandler.bind(null, {exit:true}));
+
+process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
